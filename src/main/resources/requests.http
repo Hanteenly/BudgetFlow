@@ -1,0 +1,83 @@
+### 1. REGISTER — створити користувача
+
+POST http://localhost:6060/User
+Content-Type: application/json
+
+{
+  "name": "testuser",
+  "password": "test1234"
+}
+
+
+### 2. SECURITY — без авторизації, очікуємо 401
+
+GET http://localhost:6060/api/accounts
+
+### 3. SECURITY — з Basic Auth, очікуємо 200
+
+GET http://localhost:6060/api/accounts
+Authorization: Basic testuser test1234
+
+### 4. GET BY ID — отримати конкретний Account
+
+GET http://localhost:6060/api/accounts/1
+
+### 5. UPDATE — оновити існуючий Account
+
+POST http://localhost:6060/api/transactions
+Content-Type: application/json
+
+{
+  "amount": 500,
+  "type": "INCOME",
+  "account": {
+    "id": 1
+  },
+  "category": "Salary"
+}
+###
+POST http://localhost:6060/api/transactions
+Content-Type: application/json
+
+{
+  "amount": 5000,
+  "type": "EXPENSE",
+  "account": {
+    "id": 1
+  },
+  "category": "Food"
+}
+### 5. GET BY ID — перевірити, що UPDATE спрацював
+
+GET http://localhost:6060/api/accounts/1
+
+### 6. DELETE — видалити Account
+
+DELETE http://localhost:6060/api/accounts/1
+
+### 7. GET BY ID — перевірити, що Account видалений
+
+GET http://localhost:6060/api/accounts/1
+
+### 8. GET ALL — перевірити список після DELETE
+
+GET http://localhost:6060/api/accounts
+
+### 9. GET неіснуючого Account
+
+GET http://localhost:6060/api/accounts/9999
+
+### 10. UPDATE неіснуючого Account
+
+PUT http://localhost:6060/api/accounts/9999
+Content-Type: application/json
+
+{
+  "name": "Fake Account",
+  "balance": 1000.00,
+  "currency": "EUR"
+}
+
+### 11. DELETE неіснуючого Account
+
+DELETE http://localhost:6060/api/accounts/9999
