@@ -50,5 +50,4 @@ public class AccountController {
         existingAccount.setCurrency(account.getCurrency());
         accountService.updateAccount(existingAccount, login);
     }
-
 }

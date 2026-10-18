@@ -19,34 +19,38 @@ public class AccountService {
     private UserRepository userRepository;
 
     @Autowired
-    public AccountService(AccountRepository accountRepository, UserRepository userRepository){
+    public AccountService(AccountRepository accountRepository, UserRepository userRepository) {
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
     }
 
-    public Account registerAccount(@Valid Account account, String login){
+    public Account registerAccount(@Valid Account account, String login) {
         User user = userRepository.findByName(login).orElseThrow(() -> new UserNoFindException("User is not exist with this login"));
         account.setUser(user);
         return accountRepository.save(account);
     }
-    public List<Account> getAllAccounts(String login){
+
+    public List<Account> getAllAccounts(String login) {
         User user = userRepository.findByName(login).orElseThrow(() -> new UserNoFindException("User is not exist with this login"));
         return accountRepository.getAccountsByUser(user);
     }
-    public void removeAccount(long id, String login){
+
+    public void removeAccount(long id, String login) {
         User user = userRepository.findByName(login)
                 .orElseThrow(() -> new UserNoFindException("User is not exist with this login"));
         Account account = accountRepository.getAccountByIdAndUser(id, user)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found with id: " + id));
         accountRepository.delete(account);
     }
-    public Account getById(long id, String login){
+
+    public Account getById(long id, String login) {
         User user = userRepository.findByName(login)
                 .orElseThrow(() -> new UserNoFindException("User is not exist with this login"));
         return accountRepository.getAccountByIdAndUser(id, user)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found with id: " + id));
     }
-    public void updateAccount(Account account, String login){
+
+    public void updateAccount(Account account, String login) {
         User user = userRepository.findByName(login)
                 .orElseThrow(() -> new UserNoFindException("User is not exist with this login"));
         accountRepository.getAccountByIdAndUser(account.getId(), user)
