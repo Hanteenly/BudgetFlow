@@ -4,9 +4,11 @@ import jakarta.transaction.Transactional;
 import org.example.budgetflow.Repository.AccountRepository;
 import org.example.budgetflow.Repository.CategoryRepository;
 import org.example.budgetflow.Repository.TransactionRepository;
+import org.example.budgetflow.Repository.UserRepository;
 import org.example.budgetflow.entity.Account;
 import org.example.budgetflow.entity.Category;
 import org.example.budgetflow.entity.Transaction;
+import org.example.budgetflow.entity.User;
 import org.example.budgetflow.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,26 +24,34 @@ public class TransactionService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public TransactionService(TransactionRepository transactionRepository, AccountRepository accountRepository, CategoryRepository categoryRepository){
+    public TransactionService(TransactionRepository transactionRepository, AccountRepository accountRepository, CategoryRepository categoryRepository, UserRepository userRepository){
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
     }
 
 
-    public List<Transaction> getAllTransactionByAccountId(long id) {
-        accountRepository.findById(id)
+    public List<Transaction> getAllTransactionByAccountId(String login, long id) {
+        User user = userRepository.findByName(login)
+                .orElseThrow(() -> new UserNoFindException("No user"));
+        accountRepository.getAccountByIdAndUser(id, user)
                 .orElseThrow(() -> new AccountNotFoundException("No Account"));
 
         return transactionRepository.findByAccountId(id);
     }
 
     @Transactional
-    public void transfer(long sourceAccountId, long destinationAccountId, BigDecimal amount){
-        Account senderAccount = accountRepository.findById(sourceAccountId).orElseThrow(() -> new AccountNotFoundException("No account"));
-        Account geterAccount = accountRepository.findById(destinationAccountId).orElseThrow(() -> new AccountNotFoundException("No account"));
+    public void transfer(String login, long sourceAccountId, long destinationAccountId, BigDecimal amount){
+        User user = userRepository.findByName(login)
+                .orElseThrow(() -> new UserNoFindException("No user"));
+        Account senderAccount = accountRepository.getAccountByIdAndUser(sourceAccountId, user)
+                .orElseThrow(() -> new AccountNotFoundException("No account"));
+        Account geterAccount = accountRepository.getAccountByIdAndUser(destinationAccountId, user)
+                .orElseThrow(() -> new AccountNotFoundException("No account"));
         Category transfer = categoryRepository.findByName("TRANSFER")
                 .orElseThrow(() -> new NoCategoryException("TRANSFER category not found"));
 
@@ -80,8 +90,9 @@ public class TransactionService {
     }
 
     @Transactional
-    public void createTransaction(Transaction transaction){
-        Account account = accountRepository.findById(transaction.getAccount().getId())
+    public void createTransaction(String login, Transaction transaction){
+        User user = userRepository.findByName(login).orElseThrow(() -> new UserNoFindException("Not found user"));
+        Account account = accountRepository.getAccountByIdAndUser(transaction.getAccount().getId(), user)
                 .orElseThrow(() -> new AccountNotFoundException("No account"));
         transaction.setAccount(account);
         if(transaction.getType().equals("INCOME")){
@@ -99,18 +110,30 @@ public class TransactionService {
         accountRepository.save(account);
     }
 
-    public List<Transaction> getAllTransactions(){
-        return transactionRepository.findAll();
+    public List<Transaction> getAllTransactions(String login){
+        User user = userRepository.findByName(login).orElseThrow(() -> new UserNoFindException("No user"));
+        return transactionRepository.getTransactionsByAccountUser(user);
     }
-    public Transaction getById(long id){
-        return transactionRepository.findById(id)
+    public Transaction getById(String login, long id){
+        User user = userRepository.findByName(login).orElseThrow(() -> new UserNoFindException("No user"));
+        return transactionRepository.getTransactionByIdAndAccountUser(id, user)
                 .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with id: " + id));
     }
-    public void removeTransaction(long id){
-        if(transactionRepository.findById(id).isPresent()) transactionRepository.deleteById(id);
-        else throw new TransactionNotFoundException("Transaction not found with id: " + id);
+    public void removeTransaction(String login, long id){
+        User user = userRepository.findByName(login).orElseThrow(() -> new UserNoFindException("No user"));
+        Transaction transaction = transactionRepository.getTransactionByIdAndAccountUser(id, user)
+                .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with id: " + id));
+        transactionRepository.delete(transaction);
     }
-    public void updateTransaction(Transaction transaction){
+    public void updateTransaction(String login, Transaction transaction){
+        User user = userRepository.findByName(login).orElseThrow(() -> new UserNoFindException("No user"));
+        transactionRepository.getTransactionByIdAndAccountUser(transaction.getId(), user)
+                .orElseThrow(() -> new TransactionNotFoundException("Transaction not found with id: " + transaction.getId()));
+        if (transaction.getAccount() != null && transaction.getAccount().getId() != null) {
+            Account account = accountRepository.getAccountByIdAndUser(transaction.getAccount().getId(), user)
+                    .orElseThrow(() -> new AccountNotFoundException("No account"));
+            transaction.setAccount(account);
+        }
         Category category = transaction.getCategory();
         if(categoryRepository.findById(category.getId()).isEmpty()){
             throw new NoCategoryException("No category");

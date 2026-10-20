@@ -1,9 +1,8 @@
 package org.example.budgetflow.controller;
 
-import org.example.budgetflow.entity.Account;
 import org.example.budgetflow.entity.Transaction;
 import org.example.budgetflow.service.TransactionService;
-import org.springframework.stereotype.Controller;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -20,40 +19,46 @@ public class TransactionController {
     }
 
     @PostMapping("/transfer")
-    public void transfer(@RequestParam long sourceAccountId, @RequestParam long destinationAccountId, @RequestParam BigDecimal amount){
-        transactionService.transfer(sourceAccountId, destinationAccountId, amount);
+    public void transfer(Authentication authentication,
+                         @RequestParam long sourceAccountId,
+                         @RequestParam long destinationAccountId,
+                         @RequestParam BigDecimal amount){
+        transactionService.transfer(authentication.getName(), sourceAccountId, destinationAccountId, amount);
     }
 
     @GetMapping("/accounts/{id}")
-    public List<Transaction> getAllTransactionByAccountId(@PathVariable long id){
-        return transactionService.getAllTransactionByAccountId(id);
+    public List<Transaction> getAllTransactionByAccountId(Authentication authentication, @PathVariable long id){
+        return transactionService.getAllTransactionByAccountId(authentication.getName(), id);
     }
-    @PostMapping()
-    public void register(@RequestBody Transaction transaction){
-        transactionService.createTransaction(transaction);
+
+    @PostMapping
+    public void register(Authentication authentication, @RequestBody Transaction transaction){
+        transactionService.createTransaction(authentication.getName(), transaction);
     }
+
     @GetMapping
-    public List<Transaction> getAllTransaction(){
-         return transactionService.getAllTransactions();
+    public List<Transaction> getAllTransaction(Authentication authentication){
+         return transactionService.getAllTransactions(authentication.getName());
     }
+
     @GetMapping("/{id}")
-    public Transaction getById(@PathVariable long id){
-        return transactionService.getById(id);
+    public Transaction getById(Authentication authentication, @PathVariable long id){
+        return transactionService.getById(authentication.getName(), id);
     }
 
     @DeleteMapping("/{id}")
-    public void removeTransaction(@PathVariable long id){
-        transactionService.removeTransaction(id);
+    public void removeTransaction(Authentication authentication, @PathVariable long id){
+        transactionService.removeTransaction(authentication.getName(), id);
     }
 
     @PutMapping("/{id}")
-    public void update(@PathVariable long id, @RequestBody Transaction transaction){
-        Transaction transaction2 = transactionService.getById(id);
+    public void update(Authentication authentication, @PathVariable long id, @RequestBody Transaction transaction){
+        Transaction transaction2 = transactionService.getById(authentication.getName(), id);
         transaction2.setAmount(transaction.getAmount());
         transaction2.setType(transaction.getType());
         transaction2.setAccount(transaction.getAccount());
         transaction2.setCategory(transaction.getCategory());
         transaction2.setCreatedAt(transaction.getCreatedAt());
-        transactionService.updateTransaction(transaction2);
+        transactionService.updateTransaction(authentication.getName(), transaction2);
     }
 }

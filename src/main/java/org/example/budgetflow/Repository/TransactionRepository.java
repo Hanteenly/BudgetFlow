@@ -1,9 +1,9 @@
 package org.example.budgetflow.Repository;
 
 import org.example.budgetflow.DTO.CategoryExpenseReport;
-import org.example.budgetflow.entity.Account;
 import org.example.budgetflow.entity.Category;
 import org.example.budgetflow.entity.Transaction;
+import org.example.budgetflow.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -59,6 +59,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
+    Optional<Transaction> getTransactionByIdAndAccountUser(Long id, User user);
+    List<Transaction> getTransactionsByAccountUser(User user);
 }
 
 
