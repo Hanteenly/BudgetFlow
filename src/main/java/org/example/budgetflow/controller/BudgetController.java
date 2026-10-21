@@ -6,6 +6,7 @@ import org.example.budgetflow.entity.Budget;
 import org.example.budgetflow.entity.Category;
 import org.example.budgetflow.service.BudgetService;
 import org.example.budgetflow.service.CategoryService;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,46 +27,54 @@ public class BudgetController {
     }
 
     @GetMapping("/{id}/summary")
-    public BudgetSummary getBudgetSummary(@PathVariable Long id){
-        return budgetService.getSummary(budgetService.getBudgetById(id));
+    public BudgetSummary getBudgetSummary(Authentication authentication, @PathVariable Long id){
+        String login = authentication.getName();
+        return budgetService.getSummary(budgetService.getBudgetById(login, id));
     }
     @GetMapping("/{id}/spent")
-    public BigDecimal getSpent(@PathVariable Long id) {
-        Budget budget = budgetService.getBudgetById(id);
+    public BigDecimal getSpent(Authentication authentication, @PathVariable Long id) {
+        String login = authentication.getName();
+        Budget budget = budgetService.getBudgetById(login, id);
         return budgetService.spent(budget);
     }
 
     @PutMapping
-    public void registerBudger(@RequestBody Budget budget){
-        this.budgetService.createBudget(budget);
+    public void registerBudger(Authentication authentication, @RequestBody Budget budget){
+        String login = authentication.getName();
+        this.budgetService.createBudget(login, budget);
     }
     @GetMapping("/search")
-    public Budget getBudget(@RequestParam Long category_id, @RequestParam YearMonth date){
-        Category category = categoryService.getCategoryById(category_id);
-        return budgetService.getBudget(category, date);
+    public Budget getBudget(Authentication authentication, @RequestParam Long category_id, @RequestParam YearMonth date){
+        String login = authentication.getName();
+        Category category = categoryService.getCategoryById(login, category_id);
+        return budgetService.getBudget(login, category, date);
     }
 
     @GetMapping("/{id}")
-    public Budget getBudgetById(@PathVariable Long id){
-        return budgetService.getBudgetById(id);
+    public Budget getBudgetById(Authentication authentication, @PathVariable Long id){
+        String login = authentication.getName();
+        return budgetService.getBudgetById(login, id);
     }
 
     @GetMapping
-    public List<Budget> getAllBudget(){
-        return budgetService.getAllBudget();
+    public List<Budget> getAllBudget(Authentication authentication){
+        String login = authentication.getName();
+        return budgetService.getAllBudget(login);
     }
 
     @DeleteMapping("/{id}")
-    public void removeBudget(@PathVariable Long id){
-        budgetService.removeBudget(id);
+    public void removeBudget(Authentication authentication, @PathVariable Long id){
+        String login = authentication.getName();
+        budgetService.removeBudget(login, id);
     }
 
     @PutMapping("/{id}")
-    public void updateBudget(@PathVariable Long id, @RequestBody Budget budget){
-        Budget existingBudget = budgetService.getBudgetById(id);
+    public void updateBudget(Authentication authentication, @PathVariable Long id, @RequestBody Budget budget){
+        String login = authentication.getName();
+        Budget existingBudget = budgetService.getBudgetById(login, id);
         existingBudget.setCategory(budget.getCategory());
         existingBudget.setLimit(budget.getLimit());
         existingBudget.setPeriod(budget.getPeriod());
-        budgetService.updateBudget(existingBudget);
+        budgetService.updateBudget(login, existingBudget);
     }
 }
