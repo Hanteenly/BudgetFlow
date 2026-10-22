@@ -47,9 +47,8 @@ public class BudgetService {
         }
     }
 
-    public BudgetSummary getSummary(Budget budget){
-
-        BigDecimal spent = spent(budget);
+    public BudgetSummary getSummary(String login, Budget budget){
+        BigDecimal spent = spent(login, budget);
         boolean overLimit = spent.compareTo(budget.getLimit()) > 0;
         BigDecimal remaining = budget.getLimit().subtract(spent);
         BudgetSummary budgetSummary = new BudgetSummary(
@@ -61,11 +60,12 @@ public class BudgetService {
                 );
         return budgetSummary;
     }
-    public BigDecimal spent(Budget budget){
+    public BigDecimal spent(String login, Budget budget){
+        User user = userRepository.findByName(login).orElseThrow(() -> new UserNoFindException("No foud user"));
         Category category = budget.getCategory();
         LocalDateTime start = budget.getPeriod().atDay(1).atStartOfDay();
         LocalDateTime end = budget.getPeriod().plusMonths(1).atDay(1).atStartOfDay();
-        return transactionRepositor.amountFromMonth(category, start, end);
+        return transactionRepositor.amountFromMonth(category, start, end, user);
     }
 
     public Budget getBudgetById(String login, Long id){

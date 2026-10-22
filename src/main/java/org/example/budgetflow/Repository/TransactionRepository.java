@@ -21,31 +21,40 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "WHERE u.category = :category " +
             "AND u.createdAt >= :start " +
             "AND u.createdAt < :end " +
-            "AND u.type = 'EXPENSE'")
+            "AND u.type = 'EXPENSE' " +
+            "AND u.account.user = :user"
+    )
     BigDecimal amountFromMonth(
         @Param("category") Category category,
         @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end
+        @Param("end") LocalDateTime end,
+        @Param("user") User user
     );
 
     @Query("SELECT COALESCE(SUM(u.amount), 0) " +
             "FROM Transaction u " +
             "WHERE u.type = 'EXPENSE' " +
             "AND u.createdAt >= :start " +
-            "AND u.createdAt < :end")
+            "AND u.createdAt < :end " +
+            "AND u.account.user = :user"
+    )
     BigDecimal sumExpense(
             @Param("start") LocalDateTime start,
-            @Param("end") LocalDateTime end
+            @Param("end") LocalDateTime end,
+            @Param("user") User user
     );
 
     @Query("SELECT COALESCE(SUM(u.amount), 0) " +
             "FROM Transaction u " +
             "WHERE u.type = 'INCOME' " +
             "AND u.createdAt >= :start " +
-            "AND u.createdAt < :end")
+            "AND u.createdAt < :end " +
+            "AND u.account.user = :user"
+    )
     BigDecimal sumIncome(
             @Param("start") LocalDateTime start,
-            @Param("end") LocalDateTime end
+            @Param("end") LocalDateTime end,
+            @Param("user") User user
     );
 
     @Query("SELECT new org.example.budgetflow.DTO.CategoryExpenseReport(" +
@@ -54,10 +63,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "WHERE u.type = 'EXPENSE' " +
             "AND u.createdAt >= :start " +
             "AND u.createdAt < :end " +
+            "AND u.account.user = :user " +
             "GROUP BY u.category")
     List<CategoryExpenseReport> getCategoryExpenseReport(
             @Param("start") LocalDateTime start,
-            @Param("end") LocalDateTime end
+            @Param("end") LocalDateTime end,
+            @Param("user") User user
     );
 
     Optional<Transaction> getTransactionByIdAndAccountUser(Long id, User user);

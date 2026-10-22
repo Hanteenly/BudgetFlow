@@ -29,13 +29,13 @@ public class BudgetController {
     @GetMapping("/{id}/summary")
     public BudgetSummary getBudgetSummary(Authentication authentication, @PathVariable Long id){
         String login = authentication.getName();
-        return budgetService.getSummary(budgetService.getBudgetById(login, id));
+        return budgetService.getSummary(login, budgetService.getBudgetById(login, id));
     }
     @GetMapping("/{id}/spent")
     public BigDecimal getSpent(Authentication authentication, @PathVariable Long id) {
         String login = authentication.getName();
         Budget budget = budgetService.getBudgetById(login, id);
-        return budgetService.spent(budget);
+        return budgetService.spent(login, budget);
     }
 
     @PutMapping

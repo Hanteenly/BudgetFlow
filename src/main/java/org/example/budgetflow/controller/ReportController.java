@@ -4,6 +4,7 @@ import org.example.budgetflow.DTO.AccountReport;
 import org.example.budgetflow.DTO.CategoryExpenseReport;
 import org.example.budgetflow.DTO.MonthlyReport;
 import org.example.budgetflow.service.ReportService;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,18 +19,21 @@ public class ReportController {
     }
 
     @GetMapping("/monthly")
-    public MonthlyReport getMonthlyReport(@RequestParam int year, @RequestParam int month){
-        return reportService.getMonthlyReport(year, month);
+    public MonthlyReport getMonthlyReport(Authentication authentication, @RequestParam int year, @RequestParam int month){
+        String login = authentication.getName();
+        return reportService.getMonthlyReport(login, year, month);
     }
 
     @GetMapping("/expenses-by-category")
-    public List<CategoryExpenseReport> getCategoryExpenseReport(@RequestParam int year, @RequestParam int month){
-        return reportService.getExpensesByCategory(year, month);
+    public List<CategoryExpenseReport> getCategoryExpenseReport(Authentication authentication, @RequestParam int year, @RequestParam int month){
+        String login = authentication.getName();
+        return reportService.getExpensesByCategory(login, year, month);
     }
 
     @GetMapping("/accounts")
-    public List<AccountReport> getAccountsReport(){
-        return reportService.getAccountsReport();
+    public List<AccountReport> getAccountsReport(Authentication authentication){
+        String login = authentication.getName();
+        return reportService.getAccountsReport(login);
     }
 
 }
