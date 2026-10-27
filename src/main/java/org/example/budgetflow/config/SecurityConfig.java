@@ -23,6 +23,8 @@ public class SecurityConfig{
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/User").permitAll()
+                        .requestMatchers("/", "/index.html", "/js/**").permitAll()
+                        .requestMatchers("/", "/account.html", "/js/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());
