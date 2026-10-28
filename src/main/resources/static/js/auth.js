@@ -1,49 +1,56 @@
-
-document.getElementById("register-form").addEventListener("submit", function (event) {
-    event.preventDefault();
+function registerUser() {
+    var status = document.getElementById("auth-status");
+    var name = document.getElementById("register-name").value;
+    var password = document.getElementById("register-password").value;
+    status.textContent = "Registering...";
     fetch("/User", {
         method: "POST",
+        credentials: "omit",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            name: document.getElementById("register-name").value,
-            password: document.getElementById("register-password").value
+            name: name,
+            password: password
         })
     }).then(function (response) {
         if (response.ok) {
-            alert("Registered");
-            sessionStorage.setItem("name", document.getElementById("register-name").value);
-            sessionStorage.setItem("password", document.getElementById("register-password").value);
+            sessionStorage.setItem("name", name);
+            sessionStorage.setItem("password", password);
             window.location.href = "/account.html";
         } else if (response.status === 409) {
-            alert("This name is already taken");
+            status.textContent = "This name is already taken";
         } else {
-            alert("Error: " + response.status);
+            status.textContent = "Error: " + response.status;
         }
+    }).catch(function (error) {
+        status.textContent = "Request failed: " + error;
     });
-});
+}
 
-document.getElementById("login-form").addEventListener("submit", function (event) {
-    event.preventDefault();
+function loginUser() {
+    var status = document.getElementById("auth-status");
+    var name = document.getElementById("login-name").value;
+    var password = document.getElementById("login-password").value;
+    status.textContent = "Logging in...";
     fetch("/api/accounts", {
         headers: {
-            "Authorization": "Basic " + btoa(
-                document.getElementById("login-name").value
-                + ":" +
-                document.getElementById("login-password").value
-            )
+            "Authorization": "Basic " + btoa(name + ":" + password)
         }
     }).then(function (response) {
         if (response.ok) {
-            alert("Go in");
-            sessionStorage.setItem("name", document.getElementById("login-name").value);
-            sessionStorage.setItem("password", document.getElementById("login-password").value);
+            sessionStorage.setItem("name", name);
+            sessionStorage.setItem("password", password);
             window.location.href = "/account.html";
         } else if (response.status === 401) {
-            alert("This name or password not found");
+            status.textContent = "This name or password not found";
         } else {
-            alert("Error: " + response.status);
+            status.textContent = "Error: " + response.status;
         }
+    }).catch(function (error) {
+        status.textContent = "Request failed: " + error;
     });
-});
+}
+
+document.getElementById("register-button").addEventListener("click", registerUser);
+document.getElementById("login-button").addEventListener("click", loginUser);
