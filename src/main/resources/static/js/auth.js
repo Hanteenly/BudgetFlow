@@ -52,5 +52,7 @@ function loginUser() {
     });
 }
 
+
+
 document.getElementById("register-button").addEventListener("click", registerUser);
 document.getElementById("login-button").addEventListener("click", loginUser);

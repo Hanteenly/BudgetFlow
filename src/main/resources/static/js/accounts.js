@@ -1,37 +1,37 @@
+function loadAccounts() {
     fetch("/api/accounts", {
         headers: {
-            "Authorization" : "Basic " +
+            "Authorization": "Basic " +
                 btoa(
-                sessionStorage.getItem("name")
-                + ":" +
-                sessionStorage.getItem("password")
+                    sessionStorage.getItem("name")
+                    + ":" +
+                    sessionStorage.getItem("password")
                 )
         }
-    })
-        .then(function (response) {
-            if(response.ok){
+    }).then(function (response) {
+            if (response.ok) {
                 return response.json();
-            }else if(response.status === 401){
+            } else if (response.status === 401) {
                 alert("This name or password not found");
                 window.location.href = "/index.html";
-            }else {
+            } else {
                 alert("Error: " + response.status);
                 window.location.href = "/index.html";
             }
 
-        })
-        .then(function (accounts) {
-            if(accounts){
-                for(let i = 0; i < accounts.length; i++){
+        }).then(function (accounts) {
+            if (accounts) {
+                document.getElementById("accounts").textContent = "";
+                for (let i = 0; i < accounts.length; i++) {
                     const account = accounts[i];
                     const box = document.getElementById("accounts");
-                    box.textContent = box.textContent + account.name + " " + account.balance + " " + account.currency + "\n";
+                    box.textContent = box.textContent + account.name + " " + account.balance + " " + account.currency + " " + account.id + "\n";
                 }
             }
         });
+}
 
-document.getElementById("account").addEventListener("submit", function (event){
-    event.preventDefault();
+function createAccount(){
     fetch("/api/accounts", {
         method: "POST",
         headers: {
@@ -50,7 +50,13 @@ document.getElementById("account").addEventListener("submit", function (event){
         })
     }).then(function (responce){
         if (responce.ok){
-            window.location.reload()
+            loadAccounts();
         }
     })
+}
+
+loadAccounts();
+document.getElementById("account").addEventListener("submit", function (event) {
+    event.preventDefault();
+    createAccount();
 });
