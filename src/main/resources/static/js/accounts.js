@@ -25,7 +25,8 @@ function loadAccounts() {
                 for (let i = 0; i < accounts.length; i++) {
                     const account = accounts[i];
                     const box = document.getElementById("accounts");
-                    box.textContent = box.textContent + account.name + " " + account.balance + " " + account.currency + " " + account.id + "\n";
+                    box.textContent = box.textContent + account.name + " " + account.balance + " " + account.currency + " " +
+                        account.id + "\n";
                 }
             }
         });
@@ -54,6 +55,12 @@ function createAccount(){
         }
     })
 }
+
+function logout() {
+    sessionStorage.clear();
+    window.location.href = "/index.html";
+}
+document.getElementById("logout-button").addEventListener("click", logout);
 
 loadAccounts();
 document.getElementById("account").addEventListener("submit", function (event) {

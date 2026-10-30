@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Document</title>
+    <meta name="color-scheme" content="light">
+
 </head>
-<body>
+<body style="background:#ffffff; color:#111111;">
     <div id="transaction-list"></div>
     <form id="transactions">
         <input id="account-id" type="text" placeholder="account id">
@@ -14,6 +16,14 @@
         <input id="currency" type="text" placeholder="currency">
         <button type="button" id="transaction-button">Submit</button>
     </form>
+    <form id="transfer-form">
+        <input id="sourceAccountId" type="text" placeholder="sender">
+        <input id="destinationAccountId" type="text" placeholder="geter">
+        <input id="transfer-amount" type="text" placeholder="sum">
+        <button type="button" id="transfer-button">Submit</button>
+    </form>
+    <a href="/account.html">Accounts</a>
+    <button type="button" id="logout-button">Log out</button>
     <script src="/js/transaction.js"></script>
 </body>
 </html>

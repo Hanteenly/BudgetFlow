@@ -66,6 +66,41 @@ function load_transaction(){
         }
     });
 }
+function transfer(){
+    var fromId = document.getElementById("sourceAccountId").value;
+    var toId = document.getElementById("destinationAccountId").value;
+    var amount = document.getElementById("transfer-amount").value;
+
+    fetch("/api/transactions/transfer?sourceAccountId=" + fromId
+        + "&destinationAccountId=" + toId
+        + "&amount=" + amount, {
+        method: "POST",
+        headers: {
+            "Authorization": "Basic " + btoa(
+                sessionStorage.getItem("name") + ":" + sessionStorage.getItem("password")
+            )
+        }
+    }).then(function (response){
+        if (response.ok) {
+            load_transaction();
+        }else if (response.status === 401) {
+            window.location.href = "/index.html";
+        }else if (response.status === 400) {
+            alert("Transfer failed");
+        }else{
+            alert("Error: " + response.status);
+        }
+    })
+}
+document.getElementById("transfer-button").addEventListener("click", function (event){
+    event.preventDefault();
+    transfer();
+})
+function logout() {
+    sessionStorage.clear();
+    window.location.href = "/index.html";
+}
+document.getElementById("logout-button").addEventListener("click", logout);
 
 load_transaction();
 document.getElementById("transaction-button").addEventListener("click", function (event){
