@@ -92,6 +92,71 @@ function transfer(){
         }
     })
 }
+function register_category(){
+    var name = document.getElementById("category-name").value;
+
+    fetch("/api/category", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Basic " +
+                btoa(
+                    sessionStorage.getItem("name")
+                    + ":" +
+                    sessionStorage.getItem("password")
+                )
+        },
+        body: JSON.stringify({
+            name: name
+        })
+    }).then(function (response){
+        if(response.ok){
+            load_categoryes();
+            alert("Category was added");
+        }else{
+            window.location.href = "/index.html";
+        }
+    })
+}
+
+function load_categoryes(){
+    fetch("/api/category", {
+        headers: {
+            "Authorization": "Basic " +
+                btoa(
+                    sessionStorage.getItem("name")
+                    + ":" +
+                    sessionStorage.getItem("password")
+                )
+        }
+    }).then(function (response){
+        if(response.ok){
+            return response.json();
+        }else if (response.status === 401) {
+            alert("This name or password not found");
+            window.location.href = "/index.html";
+        } else {
+            alert("Error: " + response.status);
+            window.location.href = "/index.html";
+        }
+    }).then(function (categoryes){
+        if(categoryes){
+            document.getElementById("categoryes").textContent = "";
+            for(let i = 0; i < categoryes.length; i++){
+                const category = categoryes[i];
+                const box = document.getElementById("categoryes");
+                box.textContent = box.textContent + category.name + "\n";
+            }
+        }
+    })
+}
+
+document.getElementById("category-button").addEventListener("click", function (event){
+    event.preventDefault();
+    register_category();
+})
+load_categoryes();
+
 document.getElementById("transfer-button").addEventListener("click", function (event){
     event.preventDefault();
     transfer();
