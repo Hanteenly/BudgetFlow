@@ -1,9 +1,23 @@
+var categoriesCache = [];
+function findCategoryIdByName(name) {
+    for (var i = 0; i < categoriesCache.length; i++) {
+        if (categoriesCache[i].name === name) {
+            return categoriesCache[i].id;
+        }
+    }
+    return null;
+}
 function register_transaction(){
     var name = sessionStorage.getItem("name");
     var password = sessionStorage.getItem("password");
     var amount = document.getElementById("amount").value;
     var type = document.getElementById("type").value;
     var accountId = document.getElementById("account-id").value;
+    var categoryId = findCategoryIdByName(document.getElementById("category").value);
+    if (!categoryId) {
+        alert("No such category");
+        return;
+    }
     fetch("/api/transactions", {
         method: "POST",
         headers: {
@@ -18,6 +32,9 @@ function register_transaction(){
         body: JSON.stringify({
             amount: amount,
             type: type,
+            category: {
+                id: categoryId
+            },
             account: {
                 id: accountId
             }
@@ -61,7 +78,7 @@ function load_transaction(){
             for (let i = 0; i < transactions.length; i++) {
                 const transaction = transactions[i];
                 const box = document.getElementById("transaction-list");
-                box.textContent = box.textContent + transaction.amount + " " + transaction.type + " " + transaction.account.currency + " " + transaction.createdAt + " " + transaction.account.name + "\n";
+                box.textContent = box.textContent + transaction.category.name +transaction.amount + " " + transaction.type + " " + transaction.account.currency + " " + transaction.createdAt + " " + transaction.account.name + "\n";
             }
         }
     });
@@ -148,6 +165,7 @@ function load_categoryes(){
                 box.textContent = box.textContent + category.name + "\n";
             }
         }
+        categoriesCache = categoryes;
     })
 }
 
