@@ -165,6 +165,7 @@ function load_categoryes(){
                 box.textContent = box.textContent + category.name + "\n";
             }
         }
+        sessionStorage.setItem(categoryes, "categoryes");
         categoriesCache = categoryes;
     })
 }

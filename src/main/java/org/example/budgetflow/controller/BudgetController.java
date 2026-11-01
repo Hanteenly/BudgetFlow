@@ -15,7 +15,7 @@ import java.time.YearMonth;
 import java.util.List;
 
 @RestController
-@RequestMapping("/budget")
+@RequestMapping("/api/budget")
 public class BudgetController {
 
     private BudgetService budgetService;
@@ -38,7 +38,7 @@ public class BudgetController {
         return budgetService.spent(login, budget);
     }
 
-    @PutMapping
+    @PostMapping
     public void registerBudger(Authentication authentication, @RequestBody Budget budget){
         String login = authentication.getName();
         this.budgetService.createBudget(login, budget);
