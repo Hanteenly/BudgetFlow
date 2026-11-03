@@ -16,7 +16,8 @@ public class BudgetSummary {
                          BigDecimal limit,
                          BigDecimal spent,
                          BigDecimal remaining,
-                         boolean overLimit){
+                         boolean overLimit)
+    {
         this.category = category;
         this.limit = limit;
         this.spent = spent;

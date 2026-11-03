@@ -51,6 +51,7 @@ function createAccount(){
         })
     }).then(function (responce){
         if (responce.ok){
+            window.location.href = "/account.html";
             loadAccounts();
         }
     })

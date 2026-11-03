@@ -12,7 +12,7 @@ function createBudget(){
     var period = document.getElementById("period").value.slice(0, 7);
     var categoryId = findCategoryIdByName(document.getElementById("category").value);
     fetch("/api/budget", {
-        method: "PUT",
+        method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Authorization": "Basic " +
@@ -32,6 +32,9 @@ function createBudget(){
     }).then(function (response){
         if(response.ok){
             loadBudget();
+        }else{
+            alert("Error: " + response.status);
+            window.location.href = "/index.html";
         }
     })
 }
@@ -84,10 +87,54 @@ function load_categoryes() {
         }
     });
 }
+
+function loadBudgetsSummary(){
+    var auth = {
+        "Authorization": "Basic " + btoa(
+            sessionStorage.getItem("name") + ":" + sessionStorage.getItem("password")
+        )
+    };
+    fetch("/api/budget", {
+        headers: auth
+    }).then(function (response) {
+        if (response.ok) {
+            return response.json();
+        }
+    }).then(function (budgets) {
+        var box = document.getElementById("budgetSummary");
+        box.textContent = "";
+        if (!budgets) {
+            return;
+        }
+        for (var i = 0; i < budgets.length; i++) {
+            fetch("/api/budget/" + budgets[i].id + "/summary", {
+                headers: auth
+            }).then(function (response) {
+                if (response.ok) {
+                    return response.json();
+                }
+            }).then(function (summary) {
+                if (summary) {
+                    box.textContent = box.textContent
+                        + summary.category.name + " "
+                        + summary.limit + " "
+                        + summary.spent + " "
+                        + summary.remaining + " "
+                        + summary.overLimit + "\n";
+                }
+            });
+        }
+    });
+}
 load_categoryes();
 document.getElementById("register-button").addEventListener("click", function (event){
     event.preventDefault();
     createBudget();
+});
+
+document.getElementById("Summary").addEventListener("click", function (event){
+    event.preventDefault();
+    loadBudgetsSummary();
 });
 function logout() {
     sessionStorage.clear();

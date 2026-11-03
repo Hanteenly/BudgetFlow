@@ -15,6 +15,7 @@ public class Budget {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+    @Column(name = "budget_limit")
     private BigDecimal limit;
     @Convert(converter = YearMonthConverter.class)
     private YearMonth period;
