@@ -16,6 +16,8 @@ public class RenderDatasourceEnvironmentPostProcessor implements EnvironmentPost
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         String raw = firstNonBlank(
+                System.getenv("DATABASE_URL"),
+                System.getenv("SPRING_DATASOURCE_URL"),
                 environment.getProperty("SPRING_DATASOURCE_URL"),
                 environment.getProperty("DATABASE_URL")
         );
