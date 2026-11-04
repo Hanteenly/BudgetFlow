@@ -1,0 +1,13 @@
+.git
+.idea
+.vscode
+target
+*.iml
+*.md
+.mvn
+mvnw
+mvnw.cmd
+Dockerfile
+docker-compose.yml
+render.yaml
+.env

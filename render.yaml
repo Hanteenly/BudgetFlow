@@ -1,0 +1,36 @@
+databases:
+  - name: budgetflow-db
+    databaseName: budgetflow
+    user: budgetflow
+    plan: basic-256mb
+
+services:
+  - type: web
+    name: budgetflow
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: SPRING_DATASOURCE_HOST
+        fromDatabase:
+          name: budgetflow-db
+          property: host
+      - key: SPRING_DATASOURCE_PORT
+        fromDatabase:
+          name: budgetflow-db
+          property: port
+      - key: SPRING_DATASOURCE_NAME
+        fromDatabase:
+          name: budgetflow-db
+          property: database
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: budgetflow-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: budgetflow-db
+          property: password
+      - key: PGSSLMODE
+        value: require
