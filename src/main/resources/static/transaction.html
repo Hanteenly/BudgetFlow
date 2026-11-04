@@ -3,34 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Transactions</title>
+    <title>Transactions — BudgetFlow</title>
     <meta name="color-scheme" content="light">
+    <link rel="stylesheet" href="/css/app.css">
 </head>
-<body style="background:#ffffff; color:#111111;">
-    <div id="transaction-list"></div>
-    <form id="transactions">
-        <input id="account-id" type="text" placeholder="account id">
-        <input id="type" type="text" placeholder="INCOME or EXPENSE">
-        <input id="category" type="text" placeholder="category">
-        <input id="amount" type="text" placeholder="amount">
-        <input id="currency" type="text" placeholder="currency">
-        <button type="button" id="transaction-button">Submit</button>
-    </form>
-    <form id="transfer-form">
-        <input id="sourceAccountId" type="text" placeholder="sender">
-        <input id="destinationAccountId" type="text" placeholder="geter">
-        <input id="transfer-amount" type="text" placeholder="sum">
-        <button type="button" id="transfer-button">Submit</button>
-    </form>
-
-    <div id="categoryes"></div>
-    <form id="category-form">
-        <input id="category-name" type="text" placeholder="name category">
-        <button type="button" id="category-button">Submit</button>
-    </form>
-    <a href="/account.html">Accounts</a>
-    <a href="budget.html">budgets</a>
-    <button type="button" id="logout-button">Log out</button>
-    <script src="/js/transaction.js"></script>
+<body>
+<div class="shell">
+    <header class="topbar">
+        <a class="brand" href="/account.html">Budget<span>Flow</span></a>
+        <nav>
+            <a href="/account.html">Accounts</a>
+            <a class="is-on" href="/transaction.html">Transactions</a>
+            <a href="/budget.html">Budgets</a>
+            <a href="/report.html">Reports</a>
+            <button type="button" id="logout-button">Log out</button>
+        </nav>
+    </header>
+    <h1>Transactions</h1>
+    <p class="lede">INCOME / EXPENSE, transfers between own accounts, and categories.</p>
+    <div class="card" style="margin-bottom:18px;">
+        <div class="card-head">
+            <h2>History</h2>
+            <button type="button" id="toggle-history" class="ghost">Show</button>
+        </div>
+        <div id="history-module" class="is-hidden">
+            <div class="tiles tiles-stack" id="transaction-list"></div>
+        </div>
+    </div>
+    <div class="grid grid-3">
+        <div class="card">
+            <h2>New transaction</h2>
+            <form id="transactions">
+                <label for="account-name">Account name</label>
+                <input id="account-name" type="text" placeholder="Cash">
+                <label>Type</label>
+                <div class="choice">
+                    <button type="button" id="type-income" class="choice-btn is-on">INCOME</button>
+                    <button type="button" id="type-expense" class="choice-btn">EXPENSE</button>
+                </div>
+                <input id="type" type="hidden" value="INCOME">
+                <label for="category">Category name</label>
+                <input id="category" type="text" placeholder="Food">
+                <label for="amount">Amount</label>
+                <input id="amount" type="text" placeholder="amount">
+                <label for="currency">Currency</label>
+                <input id="currency" type="text" placeholder="optional">
+                <p><button type="button" id="transaction-button">Add</button></p>
+            </form>
+        </div>
+        <div class="card">
+            <h2>Transfer</h2>
+            <form id="transfer-form">
+                <label for="source-account">From account</label>
+                <input id="source-account" type="text" placeholder="Cash">
+                <label for="destination-account">To account</label>
+                <input id="destination-account" type="text" placeholder="Bank">
+                <label for="transfer-amount">Amount</label>
+                <input id="transfer-amount" type="text" placeholder="sum">
+                <p><button type="button" id="transfer-button">Send</button></p>
+            </form>
+        </div>
+        <div class="card">
+            <h2>Categories</h2>
+            <div class="tiles tiles-wrap" id="categoryes"></div>
+            <form id="category-form">
+                <label for="category-name">Name</label>
+                <input id="category-name" type="text" placeholder="Food">
+                <p><button type="button" id="category-button">Add</button></p>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="/js/transaction.js"></script>
 </body>
 </html>

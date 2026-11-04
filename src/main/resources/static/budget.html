@@ -3,21 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Budgets</title>
+    <title>Budgets — BudgetFlow</title>
     <meta name="color-scheme" content="light">
+    <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
-    <form id="budget-form">
-        <input id="category" type="text" placeholder="category">
-        <input id="limit" type="number" placeholder="limit">
-        <input id="period" type="date" placeholder="period">
-        <button type="button" id="register-button">Submit</button>
-    </form>
-    <div id="budgets"></div>
-    <div id="budgetSummary"></div>
-    <button type="button" id="Summary">Show summary</button>
-
-    <button type="button" id="logout-button">Log out</button>
-    <script src="/js/budget.js"></script>
+<div class="shell">
+    <header class="topbar">
+        <a class="brand" href="/account.html">Budget<span>Flow</span></a>
+        <nav>
+            <a href="/account.html">Accounts</a>
+            <a href="/transaction.html">Transactions</a>
+            <a class="is-on" href="/budget.html">Budgets</a>
+            <a href="/report.html">Reports</a>
+            <button type="button" id="logout-button">Log out</button>
+        </nav>
+    </header>
+    <h1>Budgets</h1>
+    <p class="lede">Monthly limit per category. Summary compares spent against that limit.</p>
+    <div class="grid grid-2">
+        <div class="card">
+            <h2>New budget</h2>
+            <form id="budget-form">
+                <label for="category">Category name</label>
+                <input id="category" type="text" placeholder="Food">
+                <label for="limit">Limit</label>
+                <input id="limit" type="number" placeholder="500">
+                <label for="period">Month</label>
+                <input id="period" type="date">
+                <p><button type="button" id="register-button">Create</button></p>
+            </form>
+        </div>
+        <div class="card">
+            <h2>Your budgets</h2>
+            <div class="tiles tiles-stack" id="budgets"></div>
+        </div>
+        <div class="card">
+            <h2>Summary</h2>
+            <div class="tiles tiles-stack" id="budgetSummary"></div>
+            <p><button type="button" id="Summary">Show summary</button></p>
+        </div>
+    </div>
+</div>
+<script src="/js/budget.js"></script>
 </body>
 </html>

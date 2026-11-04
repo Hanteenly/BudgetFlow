@@ -61,11 +61,19 @@ function loadBudget(){
         }
     }).then(function (budgets){
         if(budgets){
-            document.getElementById("budgets").textContent = "";
-            for(let i = 0; i < budgets.length; i++){
-                const budget = budgets[i];
-                const box = document.getElementById("budgets");
-                box.textContent = box.textContent + budget.category.name + " " + budget.limit + " " + budget.period + "\n";
+            var box = document.getElementById("budgets");
+            box.textContent = "";
+            for (var i = 0; i < budgets.length; i++) {
+                var budget = budgets[i];
+                var tile = document.createElement("div");
+                tile.className = "tile";
+                var title = document.createElement("strong");
+                title.textContent = budget.category.name;
+                tile.appendChild(title);
+                var line = document.createElement("div");
+                line.textContent = budget.limit + " · " + budget.period;
+                tile.appendChild(line);
+                box.appendChild(tile);
             }
         }
     })
@@ -115,12 +123,21 @@ function loadBudgetsSummary(){
                 }
             }).then(function (summary) {
                 if (summary) {
-                    box.textContent = box.textContent
-                        + summary.category.name + " "
-                        + summary.limit + " "
-                        + summary.spent + " "
-                        + summary.remaining + " "
-                        + summary.overLimit + "\n";
+                    var tile = document.createElement("div");
+                    tile.className = "tile";
+                    var title = document.createElement("strong");
+                    title.textContent = summary.category.name;
+                    tile.appendChild(title);
+                    var line = document.createElement("div");
+                    line.textContent = "spent " + summary.spent + " / " + summary.limit;
+                    tile.appendChild(line);
+                    var meta = document.createElement("div");
+                    meta.className = "muted";
+                    meta.textContent = summary.overLimit
+                        ? "over limit"
+                        : "left " + summary.remaining;
+                    tile.appendChild(meta);
+                    box.appendChild(tile);
                 }
             });
         }
@@ -132,8 +149,19 @@ document.getElementById("register-button").addEventListener("click", function (e
     createBudget();
 });
 
+var summaryOpen = false;
 document.getElementById("Summary").addEventListener("click", function (event){
     event.preventDefault();
+    var box = document.getElementById("budgetSummary");
+    if (summaryOpen) {
+        box.classList.add("is-hidden");
+        this.textContent = "Show summary";
+        summaryOpen = false;
+        return;
+    }
+    summaryOpen = true;
+    box.classList.remove("is-hidden");
+    this.textContent = "Hide summary";
     loadBudgetsSummary();
 });
 function logout() {

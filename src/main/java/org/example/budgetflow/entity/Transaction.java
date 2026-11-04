@@ -17,9 +17,16 @@ public class Transaction {
     @JoinColumn(name = "account_id")
     private Account account;
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = true)
     private Category category;
     private LocalDateTime createdAt;
+
+    @PrePersist
+    void stampCreatedAt() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 
     public Transaction(){
     }

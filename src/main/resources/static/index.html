@@ -3,21 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Registration</title>
+    <title>BudgetFlow</title>
     <meta name="color-scheme" content="light">
+    <link rel="stylesheet" href="/css/app.css">
 </head>
-<body style="background:#ffffff; color:#111111;">
-<form id="register-form" onsubmit="return false;">
-    <input id="register-name" type="text" placeholder="Name">
-    <input id="register-password" type="password" placeholder="Password">
-    <button type="button" id="register-button">Register</button>
-</form>
-<p id="auth-status"></p>
-<form id="login-form" onsubmit="return false;">
-    <input id="login-name" type="text" placeholder="Name">
-    <input id="login-password" type="password" placeholder="Password">
-    <button type="button" id="login-button">Log in</button>
-</form>
+<body>
+<div class="auth-wrap">
+    <div class="auth-box">
+        <p class="brand">Budget<span>Flow</span></p>
+        <h1>Sign in to BudgetFlow</h1>
+        <p class="lede">Personal accounts, transactions, budgets and monthly reports. One login per browser tab.</p>
+        <div class="card">
+            <h2 id="auth-title">Log in</h2>
+            <form id="auth-form">
+                <label for="auth-name">Name</label>
+                <input id="auth-name" type="text" placeholder="Name" autocomplete="username">
+                <label for="auth-password">Password</label>
+                <input id="auth-password" type="password" placeholder="Password" autocomplete="current-password">
+                <p><button type="submit" id="auth-button">Log in</button></p>
+            </form>
+            <p class="auth-switch"><a href="#" id="auth-switch">No account? Register</a></p>
+        </div>
+        <p id="auth-status"></p>
+    </div>
+</div>
 <script src="/js/auth.js"></script>
 </body>
 </html>

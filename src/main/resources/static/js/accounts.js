@@ -21,12 +21,19 @@ function loadAccounts() {
 
         }).then(function (accounts) {
             if (accounts) {
-                document.getElementById("accounts").textContent = "";
-                for (let i = 0; i < accounts.length; i++) {
-                    const account = accounts[i];
-                    const box = document.getElementById("accounts");
-                    box.textContent = box.textContent + account.name + " " + account.balance + " " + account.currency + " " +
-                        account.id + "\n";
+                var box = document.getElementById("accounts");
+                box.textContent = "";
+                for (var i = 0; i < accounts.length; i++) {
+                    var account = accounts[i];
+                    var tile = document.createElement("div");
+                    tile.className = "tile";
+                    var title = document.createElement("strong");
+                    title.textContent = account.name;
+                    tile.appendChild(title);
+                    var line = document.createElement("div");
+                    line.textContent = account.balance + " " + account.currency;
+                    tile.appendChild(line);
+                    box.appendChild(tile);
                 }
             }
         });

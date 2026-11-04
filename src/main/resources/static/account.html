@@ -3,21 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Account</title>
+    <title>Accounts — BudgetFlow</title>
     <meta name="color-scheme" content="light">
+    <link rel="stylesheet" href="/css/app.css">
 </head>
-<body style="background:#ffffff; color:#111111;">
-    <div id = "accounts">
-
+<body>
+<div class="shell">
+    <header class="topbar">
+        <a class="brand" href="/account.html">Budget<span>Flow</span></a>
+        <nav>
+            <a class="is-on" href="/account.html">Accounts</a>
+            <a href="/transaction.html">Transactions</a>
+            <a href="/budget.html">Budgets</a>
+            <a href="/report.html">Reports</a>
+            <button type="button" id="logout-button">Log out</button>
+        </nav>
+    </header>
+    <h1>Accounts</h1>
+    <p class="lede">Create an account</p>
+    <div class="grid grid-2">
+        <div class="card">
+            <h2>Your accounts</h2>
+            <div class="tiles tiles-stack" id="accounts"></div>
+        </div>
+        <div class="card">
+            <h2>New account</h2>
+            <form id="account">
+                <label for="name">Name</label>
+                <input id="name" type="text" placeholder="Cash">
+                <label for="balance">Balance</label>
+                <input id="balance" type="text" placeholder="0">
+                <label for="currency">Currency</label>
+                <input id="currency" type="text" placeholder="USD">
+                <p><button>Create</button></p>
+            </form>
+        </div>
     </div>
-    <form id = "account">
-        <input id="name" type = "text" placeholder="name account">
-        <input id="balance" type = "text" placeholder="balance">
-        <input id="currency" type = "text" placeholder="currency">
-        <button>Submit</button>
-    </form>
-    <a href="/transaction.html">Transactions</a>
-    <button type="button" id="logout-button">Log out</button>
-    <script src="/js/accounts.js"></script>
+</div>
+<script src="/js/accounts.js"></script>
 </body>
 </html>

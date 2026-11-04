@@ -60,10 +60,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query("SELECT new org.example.budgetflow.DTO.CategoryExpenseReport(" +
             "u.category, SUM(u.amount))" +
             "FROM Transaction u " +
-            "WHERE u.type = 'EXPENSE' " +
-            "AND u.createdAt >= :start " +
+            "WHERE u.createdAt >= :start " +
             "AND u.createdAt < :end " +
             "AND u.account.user = :user " +
+            "AND u.category IS NOT NULL " +
             "GROUP BY u.category")
     List<CategoryExpenseReport> getCategoryExpenseReport(
             @Param("start") LocalDateTime start,

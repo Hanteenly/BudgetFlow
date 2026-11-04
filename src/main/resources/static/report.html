@@ -3,18 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Reports</title>
+    <title>Reports — BudgetFlow</title>
     <meta name="color-scheme" content="light">
+    <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
-    <input id="year" type="text" placeholder="year">
-    <input id="month" type="text" placeholder="month">
-    <button type="button" id="report-button">Show</button>
-
-    <div id="monthly"></div>
-    <div id="by-category"></div>
-    <div id="accounts-report"></div>
-    <button type="button" id="logout-button">Log out</button>
-    <script src="/js/reports.js"></script>
+<div class="shell">
+    <header class="topbar">
+        <a class="brand" href="/account.html">Budget<span>Flow</span></a>
+        <nav>
+            <a href="/account.html">Accounts</a>
+            <a href="/transaction.html">Transactions</a>
+            <a href="/budget.html">Budgets</a>
+            <a class="is-on" href="/report.html">Reports</a>
+            <button type="button" id="logout-button">Log out</button>
+        </nav>
+    </header>
+    <h1>Reports</h1>
+    <p class="lede">Totals are computed from existing transactions. Enter year and month, then Show.</p>
+    <div class="card" style="margin-bottom:18px;">
+        <form>
+            <div class="grid grid-2">
+                <div>
+                    <label for="year">Year</label>
+                    <input id="year" type="text" placeholder="2026">
+                </div>
+                <div>
+                    <label for="month">Month</label>
+                    <input id="month" type="text" placeholder="11">
+                </div>
+            </div>
+            <p><button type="button" id="report-button">Show</button></p>
+        </form>
+    </div>
+    <div class="grid grid-3">
+        <div class="card">
+            <h2>Month</h2>
+            <div class="tiles tiles-stack" id="monthly"></div>
+        </div>
+        <div class="card">
+            <h2>By category</h2>
+            <div class="tiles tiles-stack" id="by-category"></div>
+        </div>
+        <div class="card">
+            <h2>Accounts</h2>
+            <div class="tiles tiles-stack" id="accounts-report"></div>
+        </div>
+    </div>
+</div>
+<script src="/js/reports.js"></script>
 </body>
 </html>

@@ -1,8 +1,17 @@
 var categoriesCache = [];
+var accountsCache = [];
 function findCategoryIdByName(name) {
     for (var i = 0; i < categoriesCache.length; i++) {
         if (categoriesCache[i].name === name) {
             return categoriesCache[i].id;
+        }
+    }
+    return null;
+}
+function findAccountIdByName(name){
+    for (var i = 0; i < accountsCache.length; i++) {
+        if(accountsCache[i].name === name){
+            return accountsCache[i].id;
         }
     }
     return null;
@@ -12,8 +21,12 @@ function register_transaction(){
     var password = sessionStorage.getItem("password");
     var amount = document.getElementById("amount").value;
     var type = document.getElementById("type").value;
-    var accountId = document.getElementById("account-id").value;
+    var accountId = findAccountIdByName(document.getElementById("account-name").value);
     var categoryId = findCategoryIdByName(document.getElementById("category").value);
+    if (!accountId) {
+        alert("No such account");
+        return;
+    }
     if (!categoryId) {
         alert("No such category");
         return;
@@ -32,6 +45,7 @@ function register_transaction(){
         body: JSON.stringify({
             amount: amount,
             type: type,
+            createdAt: new Date().toISOString().slice(0, 19),
             category: {
                 id: categoryId
             },
@@ -74,19 +88,55 @@ function load_transaction(){
 
     }).then(function (transactions) {
         if (transactions) {
-            document.getElementById("transaction-list").textContent = "";
-            for (let i = 0; i < transactions.length; i++) {
-                const transaction = transactions[i];
-                const box = document.getElementById("transaction-list");
-                box.textContent = box.textContent + transaction.category.name +transaction.amount + " " + transaction.type + " " + transaction.account.currency + " " + transaction.createdAt + " " + transaction.account.name + "\n";
+            var box = document.getElementById("transaction-list");
+            box.textContent = "";
+            for (var i = 0; i < transactions.length; i++) {
+                var transaction = transactions[i];
+                var tile = document.createElement("div");
+                tile.className = "tile";
+                var title = document.createElement("strong");
+                title.textContent = transaction.category && transaction.category.name
+                    ? transaction.category.name
+                    : "Transfer";
+                tile.appendChild(title);
+                var line = document.createElement("div");
+                line.textContent = transaction.amount + " " + transaction.type + " " + transaction.account.currency;
+                tile.appendChild(line);
+                var meta = document.createElement("div");
+                meta.className = "muted";
+                var when = formatWhen(transaction.createdAt);
+                meta.textContent = when
+                    ? when + " · " + transaction.account.name
+                    : transaction.account.name;
+                tile.appendChild(meta);
+                box.appendChild(tile);
             }
         }
     });
 }
+
+function formatWhen(value) {
+    if (!value) {
+        return "";
+    }
+    if (value instanceof Array) {
+        var y = value[0];
+        var m = String(value[1]).padStart(2, "0");
+        var d = String(value[2]).padStart(2, "0");
+        var h = String(value[3] || 0).padStart(2, "0");
+        var min = String(value[4] || 0).padStart(2, "0");
+        return y + "-" + m + "-" + d + " " + h + ":" + min;
+    }
+    return String(value).replace("T", " ").slice(0, 16);
+}
 function transfer(){
-    var fromId = document.getElementById("sourceAccountId").value;
-    var toId = document.getElementById("destinationAccountId").value;
+    var fromId = findAccountIdByName(document.getElementById("source-account").value);
+    var toId = findAccountIdByName(document.getElementById("destination-account").value);
     var amount = document.getElementById("transfer-amount").value;
+    if (!fromId || !toId) {
+        alert("No such account");
+        return;
+    }
 
     fetch("/api/transactions/transfer?sourceAccountId=" + fromId
         + "&destinationAccountId=" + toId
@@ -105,7 +155,9 @@ function transfer(){
         }else if (response.status === 400) {
             alert("Transfer failed");
         }else{
-            alert("Error: " + response.status);
+            response.text().then(function (text) {
+                alert(text || ("Error: " + response.status));
+            });
         }
     })
 }
@@ -158,16 +210,42 @@ function load_categoryes(){
         }
     }).then(function (categoryes){
         if(categoryes){
-            document.getElementById("categoryes").textContent = "";
-            for(let i = 0; i < categoryes.length; i++){
-                const category = categoryes[i];
-                const box = document.getElementById("categoryes");
-                box.textContent = box.textContent + category.name + "\n";
+            var box = document.getElementById("categoryes");
+            box.textContent = "";
+            for (var i = 0; i < categoryes.length; i++) {
+                if (categoryes[i].name === "TRANSFER") {
+                    continue;
+                }
+                var tile = document.createElement("div");
+                tile.className = "tile tile-chip";
+                tile.textContent = categoryes[i].name;
+                box.appendChild(tile);
             }
         }
-        sessionStorage.setItem(categoryes, "categoryes");
         categoriesCache = categoryes;
     })
+}
+
+function load_accounts(){
+    fetch("/api/accounts", {
+        headers: {
+            "Authorization": "Basic " +
+                btoa(
+                    sessionStorage.getItem("name")
+                    + ":" +
+                    sessionStorage.getItem("password")
+                )
+        }
+    }).then(function (response){
+        if(response.ok){
+            return response.json();
+        }
+        return [];
+    }).then(function (accounts){
+        if(accounts){
+            accountsCache = accounts;
+        }
+    });
 }
 
 document.getElementById("category-button").addEventListener("click", function (event){
@@ -175,6 +253,7 @@ document.getElementById("category-button").addEventListener("click", function (e
     register_category();
 })
 load_categoryes();
+load_accounts();
 
 document.getElementById("transfer-button").addEventListener("click", function (event){
     event.preventDefault();
@@ -185,6 +264,33 @@ function logout() {
     window.location.href = "/index.html";
 }
 document.getElementById("logout-button").addEventListener("click", logout);
+
+function setType(type) {
+    document.getElementById("type").value = type;
+    document.getElementById("type-income").classList.toggle("is-on", type === "INCOME");
+    document.getElementById("type-expense").classList.toggle("is-on", type === "EXPENSE");
+}
+
+document.getElementById("type-income").addEventListener("click", function () {
+    setType("INCOME");
+});
+document.getElementById("type-expense").addEventListener("click", function () {
+    setType("EXPENSE");
+});
+
+function bindToggle(buttonId, moduleId, hideLabel, showLabel) {
+    var button = document.getElementById(buttonId);
+    if (!button) {
+        return;
+    }
+    button.addEventListener("click", function () {
+        var module = document.getElementById(moduleId);
+        var hidden = module.classList.toggle("is-hidden");
+        this.textContent = hidden ? showLabel : hideLabel;
+    });
+}
+
+bindToggle("toggle-history", "history-module", "Hide", "Show");
 
 load_transaction();
 document.getElementById("transaction-button").addEventListener("click", function (event){

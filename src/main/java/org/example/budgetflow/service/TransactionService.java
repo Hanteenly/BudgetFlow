@@ -52,8 +52,6 @@ public class TransactionService {
                 .orElseThrow(() -> new AccountNotFoundException("No account"));
         Account geterAccount = accountRepository.getAccountByIdAndUser(destinationAccountId, user)
                 .orElseThrow(() -> new AccountNotFoundException("No account"));
-        Category transfer = categoryRepository.findByName("TRANSFER")
-                .orElseThrow(() -> new NoCategoryException("TRANSFER category not found"));
 
         if(senderAccount.getId().equals(geterAccount.getId())) {
             throw new InvalidTransferException("Same accounts");
@@ -63,7 +61,7 @@ public class TransactionService {
                 Transaction transaction1 = new Transaction(
                         amount,
                         "EXPENSE",
-                        transfer,
+                        null,
                         LocalDateTime.now(),
                         senderAccount
                 );
@@ -71,7 +69,7 @@ public class TransactionService {
                 Transaction transaction2 = new Transaction(
                         amount,
                         "INCOME",
-                        transfer,
+                        null,
                         LocalDateTime.now(),
                         geterAccount
                 );
@@ -95,6 +93,9 @@ public class TransactionService {
         Account account = accountRepository.getAccountByIdAndUser(transaction.getAccount().getId(), user)
                 .orElseThrow(() -> new AccountNotFoundException("No account"));
         transaction.setAccount(account);
+        if (transaction.getCreatedAt() == null) {
+            transaction.setCreatedAt(LocalDateTime.now());
+        }
         if(transaction.getType().equals("INCOME")){
             account.addBalance(transaction.getAmount());
         }else if(transaction.getType().equals("EXPENSE")){

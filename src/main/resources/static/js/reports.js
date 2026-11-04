@@ -26,8 +26,10 @@ function loadReports() {
             }
         })
         .then(function (items) {
-            if (items) {
+            if (items && items.length) {
                 showByCategory(items);
+            } else {
+                showByCategoryFromTransactions(year, month, auth);
             }
         });
 
@@ -45,23 +47,108 @@ function loadReports() {
 }
 
 function showMonthly(report) {
-    document.getElementById("monthly").textContent =
-        report.income + " " + report.expense + " " + report.net;
+    var box = document.getElementById("monthly");
+    box.textContent = "";
+    var tile = document.createElement("div");
+    tile.className = "tile";
+    var title = document.createElement("strong");
+    title.textContent = "Month";
+    tile.appendChild(title);
+    var line = document.createElement("div");
+    line.textContent = "in " + report.income + " · out " + report.expense;
+    tile.appendChild(line);
+    var meta = document.createElement("div");
+    meta.className = "muted";
+    meta.textContent = "net " + report.net;
+    tile.appendChild(meta);
+    box.appendChild(tile);
+}
+
+function categoryName(item) {
+    if (item.category && item.category.name) {
+        return item.category.name;
+    }
+    if (typeof item.category === "string") {
+        return item.category;
+    }
+    return "Unknown";
 }
 
 function showByCategory(items) {
     var box = document.getElementById("by-category");
     box.textContent = "";
     for (var i = 0; i < items.length; i++) {
-        box.textContent = box.textContent + items[i].category.name + " " + items[i].amount + "\n";
+        var tile = document.createElement("div");
+        tile.className = "tile";
+        var title = document.createElement("strong");
+        title.textContent = categoryName(items[i]);
+        tile.appendChild(title);
+        var line = document.createElement("div");
+        line.textContent = items[i].amount;
+        tile.appendChild(line);
+        box.appendChild(tile);
     }
+}
+
+function monthPrefix(year, month) {
+    var m = String(month);
+    if (m.length === 1) {
+        m = "0" + m;
+    }
+    return year + "-" + m;
+}
+
+function showByCategoryFromTransactions(year, month, auth) {
+    fetch("/api/transactions", { headers: auth })
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            }
+        })
+        .then(function (transactions) {
+            var totals = {};
+            var prefix = monthPrefix(year, month);
+            if (!transactions) {
+                return;
+            }
+            for (var i = 0; i < transactions.length; i++) {
+                var transaction = transactions[i];
+                if (!transaction.category || !transaction.category.name || !transaction.createdAt) {
+                    continue;
+                }
+                if (String(transaction.createdAt).indexOf(prefix) !== 0) {
+                    continue;
+                }
+                var name = transaction.category.name;
+                if (!totals[name]) {
+                    totals[name] = 0;
+                }
+                totals[name] += Number(transaction.amount);
+            }
+            var items = [];
+            for (var name in totals) {
+                items.push({
+                    category: { name: name },
+                    amount: totals[name]
+                });
+            }
+            showByCategory(items);
+        });
 }
 
 function showAccounts(items) {
     var box = document.getElementById("accounts-report");
     box.textContent = "";
     for (var i = 0; i < items.length; i++) {
-        box.textContent = box.textContent + items[i].account + " " + items[i].balance + "\n";
+        var tile = document.createElement("div");
+        tile.className = "tile";
+        var title = document.createElement("strong");
+        title.textContent = items[i].account;
+        tile.appendChild(title);
+        var line = document.createElement("div");
+        line.textContent = items[i].balance;
+        tile.appendChild(line);
+        box.appendChild(tile);
     }
 }
 

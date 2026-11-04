@@ -5,7 +5,6 @@ import org.example.budgetflow.Repository.CategoryRepository;
 import org.example.budgetflow.Repository.TransactionRepository;
 import org.example.budgetflow.Repository.UserRepository;
 import org.example.budgetflow.entity.Account;
-import org.example.budgetflow.entity.Category;
 import org.example.budgetflow.entity.Transaction;
 import org.example.budgetflow.entity.User;
 import org.example.budgetflow.exceptions.InsufficientBalanceException;
@@ -48,7 +47,6 @@ public class TransactionServiceTest {
     private User user;
     private Account sender;
     private Account receiver;
-    private Category transferCategory;
 
     @BeforeEach
     void setUp() {
@@ -57,12 +55,10 @@ public class TransactionServiceTest {
         sender.setId(1L);
         receiver = new Account("Card", new BigDecimal("50"), "EUR");
         receiver.setId(2L);
-        transferCategory = new Category("TRANSFER");
 
         when(userRepository.findByName("testuser")).thenReturn(Optional.of(user));
         when(accountRepository.getAccountByIdAndUser(1L, user)).thenReturn(Optional.of(sender));
         when(accountRepository.getAccountByIdAndUser(2L, user)).thenReturn(Optional.of(receiver));
-        when(categoryRepository.findByName("TRANSFER")).thenReturn(Optional.of(transferCategory));
     }
 
     @Test
