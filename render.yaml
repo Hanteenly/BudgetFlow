@@ -12,6 +12,10 @@ services:
     dockerfilePath: ./Dockerfile
     healthCheckPath: /
     envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: budgetflow-db
+          property: connectionString
       - key: SPRING_DATASOURCE_HOST
         fromDatabase:
           name: budgetflow-db
